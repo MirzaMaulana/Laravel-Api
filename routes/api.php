@@ -34,6 +34,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //reset password
 Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->middleware('auth:sanctum');
+//change password
+Route::post('/password/change', [PasswordResetController::class, 'changePassword'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/comment', [CommentController::class, 'create']);
