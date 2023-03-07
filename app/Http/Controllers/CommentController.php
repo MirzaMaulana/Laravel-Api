@@ -19,6 +19,7 @@ class CommentController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Data yang anda berikan tidak valid',
                 'errors' => $validator->errors(),
             ], 422);
@@ -27,10 +28,15 @@ class CommentController extends Controller
             $input = $request->all();
             $input['user_id'] = auth()->id();
             $comment = Comment::create($input);
-            return new CommentResource($comment);
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Sukses Mengupload Comment',
+                'data' =>  new CommentResource($comment)
+            ]);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -43,6 +49,7 @@ class CommentController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Data yang anda berikan tidak valid',
                 'errors' => $validator->errors(),
             ], 422);
@@ -50,10 +57,15 @@ class CommentController extends Controller
         try {
             $findComment = Comment::findOrFail($id);
             $findComment->update($request->only('content'));
-            return new CommentResource($findComment);
+            return response()->json([
+                'status' => 'Sukses',
+                'message' => 'Sukses Mengupdate Comment',
+                'data' =>   new CommentResource($findComment)
+            ]);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -65,11 +77,13 @@ class CommentController extends Controller
             $comment->delete();
 
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Komentar Sukses Dihapus'
             ]);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }

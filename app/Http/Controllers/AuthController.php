@@ -23,6 +23,7 @@ class AuthController extends Controller
         //mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Data Yang Anda Berikan Tidak Valid',
                 'errors' => $validator->errors(),
             ], 422);
@@ -38,6 +39,7 @@ class AuthController extends Controller
             $success['name'] = $user->name;
             $success['email'] = $user->email;
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Anda Berhasil Register',
                 'data' => [
                     'user' => $success,
@@ -47,6 +49,7 @@ class AuthController extends Controller
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -68,13 +71,7 @@ class AuthController extends Controller
             $success['email'] = $auth->email;
 
             return response()->json([
-                'message' => 'Anda Berhasil login',
-                'data' => [
-                    'user' => $success,
-                    'api_token' => $token,
-                ],
-            ], 200);
-            return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Anda Berhasil login',
                 'data' => [
                     'user' => $success,
@@ -84,8 +81,25 @@ class AuthController extends Controller
         } else {
             //jika salah login
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Cek Email Dan Password',
             ], 422);
+        }
+    }
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([
+                'status' => 'Sukses',
+                'message' => 'Anda Berhasil Logout',
+            ], 200);
+        } catch (Throwable $th) {
+            info($th);
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
+            ]);
         }
     }
 }

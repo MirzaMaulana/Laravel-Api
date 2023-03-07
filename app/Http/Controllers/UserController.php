@@ -25,17 +25,20 @@ class UserController extends Controller
         //mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Data Yang Anda Berikan Tidak Valid',
                 'errors' => $validator->errors(),
             ], 422);
         }
         try {
             $input = $request->all();
+            $input['role'] = 'Admin';
             $input['password'] = Hash::make('password');
             $user = User::create($input);
             $success = $user;
 
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Berhasil Membuat User Baru',
                 'data' => [
                     'user' => $success
@@ -44,6 +47,7 @@ class UserController extends Controller
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -51,7 +55,11 @@ class UserController extends Controller
     public function show()
     {
         $users = User::all();
-        return response()->json($users);
+        return response()->json([
+            'status' => 'Sukses',
+            'message' => 'Sukses mendapatkan data',
+            'data' => UserResource::collection($users)
+        ], 200);
     }
 
     public function destroy(User $user)
@@ -59,11 +67,13 @@ class UserController extends Controller
         try {
             $user->delete();
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'sukses menghapus user'
             ], 200);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -73,34 +83,45 @@ class UserController extends Controller
     {
         try {
             // Memvalidasi inputan update
-            $validator = Validator::make($request->all(), [
-                'name' => ['required', 'string', 'max:255'],
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => ['required', 'string', 'max:255'],
+                    'alamat' => ['required', 'string', 'max:255'],
+                    'jenis_kelamin' => ['required']
+                ],
+                [
+                    'jenis_kelamin' => 'Kalo Gak Laki-Laki ya Perempuan, Jangan pilih yang lain!'
+                ]
+            );
             // jika kondisi validasi tidak sesuai maka akan muncul pesan ini
             if ($validator->fails()) {
                 return response()->json([
+                    'status' => 'Failed',
                     'message' => 'Data yang anda berikan tidak valid',
                     'errors' => $validator->errors(),
                 ], 422);
             } else {
                 if (!$user) {
                     return response()->json([
+                        'status' => 'Failed',
                         'message' => 'User tidak ditemukan',
                     ], 404);
                 }
                 //menyimpan request
-                $user->name = $request->name;
-                $user->save();
-                $success['name'] = $user->name;
+                $input = $request->all();
+                $user->update($input);
                 return response()->json([
+                    'status' => 'Sukses',
                     'message' => 'Sukses Mengupdate data profile',
                     'data' => [
-                        'user' => $success,
+                        'user' => $user,
                     ],
                 ], 201);
             }
         } catch (\Throwable $th) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi',
             ], 500);
         }

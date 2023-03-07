@@ -1,13 +1,15 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MyProfileController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\MyProfileController;
+use App\Http\Controllers\PasswordResetController;
+use Illuminate\Auth\Events\PasswordReset;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,11 +30,15 @@ use App\Http\Controllers\CommentController;
 Route::post('/register', [AuthController::class, 'register']);
 // Route untuk login
 Route::post('/login', [AuthController::class, 'login']);
+//Route untuk logout
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+//reset password
+Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/comment', [CommentController::class, 'create']);
-    Route::put('/comment/{id}', [CommentController::class, 'update'])->middleware('EditComment');
-    Route::delete('/comment/{id}', [CommentController::class, 'destroy'])->middleware('EditComment');
+    Route::put('/comment/{id}', [CommentController::class, 'update'])->middleware('pemilik-comment');
+    Route::delete('/comment/{id}', [CommentController::class, 'destroy'])->middleware('pemilik-comment');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -21,7 +21,11 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         $post->views++;
         $post->save();
-        return new PostResource($post);
+        return response()->json([
+            'status' => 'Sukses',
+            'message' => 'Sukses Mendapatkan data post',
+            'data' => new PostResource($post),
+        ], 201);
     }
     public function store(Request $request)
     {
@@ -34,6 +38,7 @@ class PostController extends Controller
         // mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Data yang anda berikan tidak valid',
                 'errors' => $validator->errors(),
             ], 422);
@@ -50,14 +55,16 @@ class PostController extends Controller
             $success = $post;
 
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Berhasil membuat post baru',
                 'data' => [
-                    'post' => $success,
+                    'post' => PostResource::collection($success),
                 ],
             ], 201);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -74,6 +81,7 @@ class PostController extends Controller
         // mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Data yang anda berikan tidak valid',
                 'errors' => $validator->errors(),
             ], 422);
@@ -86,6 +94,7 @@ class PostController extends Controller
             $post->save();
 
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'Berhasil mengupdate post',
                 'data' => [
                     'post' => $post,
@@ -94,6 +103,7 @@ class PostController extends Controller
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
@@ -103,11 +113,13 @@ class PostController extends Controller
         try {
             $post->delete();
             return response()->json([
+                'status' => 'Sukses',
                 'message' => 'sukses menghapus post'
             ], 200);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }
