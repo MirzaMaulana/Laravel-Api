@@ -21,6 +21,15 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
             'confirm_password' => ['required', 'same:password']
+        ], [
+            'name.required' => 'name harus di isi',
+            'name.string' => 'name harus bernilai string',
+            'email.required' => 'email harus di isi',
+            'email.email' => 'Format email salah, seharusnya contoh@example.com',
+            'password.required' => 'password harus di isi',
+            'password.min:8' => 'password minimal 8 huruf',
+            'confirm_password.required' => 'confirmasi password harus di isi',
+            'confirm_password.same:password' => 'confirmasi password salah pastikan confirmasi password sama dengan password'
         ]);
         //mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
@@ -91,6 +100,9 @@ class UserController extends Controller
                     'jenis_kelamin' => ['required']
                 ],
                 [
+                    'name.required' => 'name harus di isi',
+                    'name.string' => 'name harus bernilai string',
+                    'alamat' => 'alamat tidak boleh kosong',
                     'jenis_kelamin' => 'Kalo Gak Laki-Laki ya Perempuan, Jangan pilih yang lain!'
                 ]
             );

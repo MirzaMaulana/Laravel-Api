@@ -16,9 +16,18 @@ class AuthController extends Controller
         //memvalidasi inputan register
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
             'confirm_password' => ['required', 'same:password']
+        ], [
+            'name.required' => 'name harus di isi',
+            'name.string' => 'name harus bernilai string',
+            'email.required' => 'email harus di isi',
+            'email.email' => 'Format email salah, seharusnya contoh@example.com',
+            'password.required' => 'password harus di isi',
+            'password.min:8' => 'password minimal 8 huruf',
+            'confirm_password.required' => 'confirmasi password harus di isi',
+            'confirm_password.same:password' => 'confirmasi password salah pastikan confirmasi password sama dengan password'
         ]);
         //mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
@@ -36,11 +45,12 @@ class AuthController extends Controller
 
             //memberikan token
             $token = $user->createToken('api_token')->plainTextToken;
+            Auth::login($user);
             $success['name'] = $user->name;
             $success['email'] = $user->email;
             return response()->json([
                 'status' => 'Sukses',
-                'message' => 'Anda Berhasil Register',
+                'message' => 'Anda Berhasil Register dan login',
                 'data' => [
                     'user' => $success,
                     'api_token' => $token,
@@ -61,6 +71,11 @@ class AuthController extends Controller
         $data = $request->validate([
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8'],
+        ], [
+            'email.required' => 'email harus di isi',
+            'email.email' => 'Format email salah, seharusnya contoh@example.com',
+            'password.required' => 'password harus di isi',
+            'password.min:8' => 'password minimal 8 huruf',
         ]);
 
         //mengecek jika user telah register dan berhasil login

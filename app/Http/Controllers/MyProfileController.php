@@ -29,6 +29,9 @@ class MyProfileController extends Controller
                     'jenis_kelamin' => ['required']
                 ],
                 [
+                    'name.required' => 'name harus di isi',
+                    'name.string' => 'name harus bernilai string',
+                    'alamat' => 'alamat tidak boleh kosong',
                     'jenis_kelamin' => 'Kalo Gak Laki-Laki ya Perempuan, Jangan pilih yang lain!'
                 ]
             );

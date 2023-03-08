@@ -33,6 +33,9 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required'],
+        ], [
+            'title' => 'title tidak boleh kosong',
+            'content' => 'content tidak boleh kosong'
         ]);
 
         // mengecek ketika terjadi error saat input data
@@ -76,6 +79,9 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required'],
+        ], [
+            'title' => 'title tidak boleh kosong',
+            'content' => 'content tidak boleh kosong'
         ]);
 
         // mengecek ketika terjadi error saat input data

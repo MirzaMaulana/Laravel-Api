@@ -16,6 +16,9 @@ class CommentController extends Controller
         $validator = Validator::make($request->all(), [
             'post_id' => ['required', 'exists:posts,id'],
             'content' => ['required'],
+        ], [
+            'post_id' => 'isi id post yang mau dikomentari',
+            'content.required' => 'komentar tidak boleh kosong'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -46,6 +49,8 @@ class CommentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'content' => ['required'],
+        ], [
+            'content.required' => 'komentar tidak boleh kosong'
         ]);
         if ($validator->fails()) {
             return response()->json([
