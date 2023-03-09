@@ -29,17 +29,17 @@ use Illuminate\Auth\Events\PasswordReset;
 // Route untuk register
 Route::post('/register', [AuthController::class, 'register']);
 // Route untuk login
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 //Route untuk logout
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 //reset password
-Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->middleware('auth:sanctum');
+Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->middleware('auth:sanctum', 'throttle:reset');
 //change password
 Route::post('/password/change', [PasswordResetController::class, 'changePassword'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/comment', [CommentController::class, 'create']);
-    Route::put('/comment/{id}', [CommentController::class, 'update'])->middleware('pemilik-comment');
+    Route::post('/comment', [CommentController::class, 'create'])->middleware('throttle:comment');
+    Route::put('/comment/{id}', [CommentController::class, 'update'])->middleware('pemilik-comment', 'throttle:editcomment');
     Route::delete('/comment/{id}', [CommentController::class, 'destroy'])->middleware('pemilik-comment');
 });
 
@@ -65,17 +65,17 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
 })->name('user');
 
 // Route untuk post
-Route::prefix('post')->middleware('auth:sanctum')->group(function () {
+Route::prefix('post')->group(function () {
     Route::controller(PostController::class)->group(function () {
         //menampilkan semua post
         Route::get('/list', 'index');
         //menampilkan satu post sesuai idnya
         Route::get('/show/{id}', 'show');
         // membuat post baru
-        Route::post('/create', 'store');
+        Route::post('/create', 'store')->middleware('auth:sanctum');
         //Update post
-        Route::put('/update/{post}', 'update');
+        Route::put('/update/{post}', 'update')->middleware('auth:sanctum');
         // Hapus Post
-        Route::delete('/delete/{post}', 'destroy');
+        Route::delete('/delete/{post}', 'destroy')->middleware('auth:sanctum');
     });
 });

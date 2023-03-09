@@ -13,8 +13,12 @@ class PostController extends Controller
 {
     public function index(Post $post)
     {
-        $posts = Post::all();
-        return PostResource::collection($posts);
+        $posts = Post::paginate(10);
+        return  response()->json([
+            'status' => 'Sukses',
+            'message' => 'Sukses mendapatkan data',
+            'data' => PostResource::collection($posts)
+        ], 200);
     }
     public function show($id)
     {
@@ -61,13 +65,13 @@ class PostController extends Controller
                 'status' => 'Sukses',
                 'message' => 'Berhasil membuat post baru',
                 'data' => [
-                    'post' => PostResource::collection($success),
+                    'post' => new PostResource($success),
                 ],
             ], 201);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
-                'status' => 'Sukses',
+                'status' => 'Failed',
                 'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
             ]);
         }

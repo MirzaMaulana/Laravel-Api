@@ -32,7 +32,7 @@ class CommentController extends Controller
             $input['user_id'] = auth()->id();
             $comment = Comment::create($input);
             return response()->json([
-                'status' => 'Failed',
+                'status' => 'Sukses',
                 'message' => 'Sukses Mengupload Comment',
                 'data' =>  new CommentResource($comment)
             ]);

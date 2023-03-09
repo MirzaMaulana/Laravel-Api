@@ -63,7 +63,7 @@ class UserController extends Controller
     }
     public function show()
     {
-        $users = User::all();
+        $users = User::paginate(10);
         return response()->json([
             'status' => 'Sukses',
             'message' => 'Sukses mendapatkan data',
