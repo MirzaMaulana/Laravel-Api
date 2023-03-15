@@ -44,14 +44,10 @@ class UserController extends Controller
             $input['role'] = 'Admin';
             $input['password'] = Hash::make('password');
             $user = User::create($input);
-            $success = $user;
 
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Berhasil Membuat User Baru',
-                'data' => [
-                    'user' => $success
-                ],
             ], 201);
         } catch (Throwable $th) {
             info($th);
@@ -64,11 +60,24 @@ class UserController extends Controller
     public function show()
     {
         $users = User::paginate(10);
-        return response()->json([
-            'status' => 'Sukses',
-            'message' => 'Sukses mendapatkan data',
-            'data' => UserResource::collection($users)
-        ], 200);
+        $usersData = $users->items();
+        $nextPageUrl = $users->nextPageUrl();
+        $prevPageUrl = $users->previousPageUrl();
+
+        $response = [
+            'message' => 'Menampilkan Semua Users',
+            'data' => $usersData
+        ];
+
+        if (!is_null($nextPageUrl)) {
+            $response['selanjutnya'] = $nextPageUrl;
+        }
+
+        if (!is_null($prevPageUrl)) {
+            $response['sebelumnya'] = $prevPageUrl;
+        }
+
+        return response()->json($response);
     }
 
     public function destroy(User $user)
@@ -126,9 +135,6 @@ class UserController extends Controller
                 return response()->json([
                     'status' => 'Sukses',
                     'message' => 'Sukses Mengupdate data profile',
-                    'data' => [
-                        'user' => $user,
-                    ],
                 ], 201);
             }
         } catch (\Throwable $th) {

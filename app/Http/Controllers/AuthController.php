@@ -51,10 +51,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Anda Berhasil Register dan login',
-                'data' => [
-                    'user' => $success,
-                    'api_token' => $token,
-                ],
+                'api_token' => $token,
             ], 201);
         } catch (Throwable $th) {
             info($th);
@@ -88,10 +85,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Anda Berhasil login',
-                'data' => [
-                    'user' => $success,
-                    'api_token' => $token,
-                ],
+                'api_token' => $token,
             ], 200);
         } else {
             //jika salah login

@@ -47,6 +47,7 @@ class MyProfileController extends Controller
                 $user = $request->user();
                 if (!$user) {
                     return response()->json([
+                        'status' => 'Failed',
                         'message' => 'Pengguna tidak ditemukan',
                     ], 404);
                 }
@@ -58,9 +59,6 @@ class MyProfileController extends Controller
                 return response()->json([
                     'status' => 'Sukses',
                     'message' => 'Sukses Mengupdate data profile',
-                    'data' => [
-                        'user' => $user,
-                    ],
                 ], 201);
             }
         } catch (\Throwable $th) {

@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CommentResource;
 use Throwable;
-use App\Models\Comment;
+use App\Models\Tags;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class CommentController extends Controller
+class TagsController extends Controller
 {
-    // create comment
-    public function create(Request $request)
+    public function store(Request $request)
     {
+        // memvalidasi inputan post
         $validator = Validator::make($request->all(), [
-            'post_id' => ['required', 'exists:posts,id'],
-            'content' => ['required'],
+            'name' => ['required', 'string', 'max:255'],
         ], [
-            'post_id' => 'isi id post yang mau dikomentari',
-            'content.required' => 'komentar tidak boleh kosong'
+            'name.required' => 'name tidak boleh kosong',
+            'name.string' => 'name harus bernilai string'
         ]);
+
+        // mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'Failed',
@@ -27,14 +28,19 @@ class CommentController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+
         try {
-            $input = $request->all();
-            $input['user_id'] = auth()->id();
-            $comment = Comment::create($input);
+            $input = [
+                'name' => $request->name,
+                'created_by' => Auth::user()->name
+            ];
+
+            $tag = Tags::create($input);
+
             return response()->json([
                 'status' => 'Sukses',
-                'message' => 'Sukses Mengupload Comment',
-            ]);
+                'message' => 'Berhasil membuat Tag baru',
+            ], 201);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
@@ -43,14 +49,16 @@ class CommentController extends Controller
             ]);
         }
     }
-
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'content' => ['required'],
+            'name' => ['required', 'string', 'max:255'],
         ], [
-            'content.required' => 'komentar tidak boleh kosong'
+            'name.required' => 'name tidak boleh kosong',
+            'name.string' => 'name harus bernilai string'
         ]);
+
+        // mengecek ketika terjadi error saat input data
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'Failed',
@@ -58,13 +66,16 @@ class CommentController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+
         try {
-            $findComment = Comment::findOrFail($id);
-            $findComment->update($request->only('content'));
+            $tag = Tags::find($id);
+            $tag->name = $request->name;
+            $tag->save();
+
             return response()->json([
                 'status' => 'Sukses',
-                'message' => 'Sukses Mengupdate Comment',
-            ]);
+                'message' => 'Berhasil Mengedit Tag',
+            ], 201);
         } catch (Throwable $th) {
             info($th);
             return response()->json([
@@ -73,16 +84,14 @@ class CommentController extends Controller
             ]);
         }
     }
-    public function destroy(Request $request, $id)
+    public function destroy(Tags $tag)
     {
         try {
-            $comment = Comment::findOrFail($id);
-            $comment->delete();
-
+            $tag->delete();
             return response()->json([
                 'status' => 'Sukses',
-                'message' => 'Komentar Sukses Dihapus'
-            ]);
+                'message' => 'sukses menghapus tag'
+            ], 200);
         } catch (Throwable $th) {
             info($th);
             return response()->json([

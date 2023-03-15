@@ -14,11 +14,24 @@ class PostController extends Controller
     public function index(Post $post)
     {
         $posts = Post::paginate(10);
+        $postsData = $posts->items();
+        $nextPageUrl = $posts->nextPageUrl();
+        $prevPageUrl = $posts->previousPageUrl();
         return  response()->json([
             'status' => 'Sukses',
             'message' => 'Sukses mendapatkan data',
-            'data' => PostResource::collection($posts)
+            'data' => PostResource::collection($postsData)
         ], 200);
+
+        if (!is_null($nextPageUrl)) {
+            $response['selanjutnya'] = $nextPageUrl;
+        }
+
+        if (!is_null($prevPageUrl)) {
+            $response['sebelumnya'] = $prevPageUrl;
+        }
+
+        return response()->json($response);
     }
     public function show($id)
     {
@@ -37,9 +50,12 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required'],
+            'tag' => ['required', 'integer']
         ], [
-            'title' => 'title tidak boleh kosong',
-            'content' => 'content tidak boleh kosong'
+            'title.required' => 'title tidak boleh kosong',
+            'content.required' => 'content tidak boleh kosong',
+            'tag.required' => 'tag tidak boleh kosong dan pastikan anda sudah membuat tagnya',
+            'tag.integer' => 'pastikan anda memasukan id tagnya'
         ]);
 
         // mengecek ketika terjadi error saat input data
@@ -57,16 +73,12 @@ class PostController extends Controller
                 'content' => $request->content,
                 'created_by' => Auth::user()->name
             ];
-
             $post = Post::create($input);
-            $success = $post;
+            $post->tag()->attach($request->tag);
 
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Berhasil membuat post baru',
-                'data' => [
-                    'post' => new PostResource($success),
-                ],
             ], 201);
         } catch (Throwable $th) {
             info($th);
@@ -106,9 +118,6 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Berhasil mengupdate post',
-                'data' => [
-                    'post' => $post,
-                ],
             ], 200);
         } catch (Throwable $th) {
             info($th);
