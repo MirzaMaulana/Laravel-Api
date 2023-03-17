@@ -19,6 +19,7 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'content' => $this->content,
             'like' => $this->likes ? $this->likes->count() : null,
+            'tags' => $this->tag ? $this->tag : null,
             'created_by' => $this->created_by,
             'created_at' => $this->createdAtFormat
         ];
