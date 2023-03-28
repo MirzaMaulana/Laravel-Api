@@ -44,14 +44,14 @@ class AuthController extends Controller
             $user = User::create($input);
 
             //memberikan token
-            $token = $user->createToken('api_token')->plainTextToken;
+            $token = $user->createToken('token')->plainTextToken;
             Auth::login($user);
             $success['name'] = $user->name;
             $success['email'] = $user->email;
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Anda Berhasil Register dan login',
-                'api_token' => $token,
+                'token' => $token,
             ], 201);
         } catch (Throwable $th) {
             info($th);
@@ -77,15 +77,16 @@ class AuthController extends Controller
 
         //mengecek jika user telah register dan berhasil login
         if (Auth::attempt($data)) {
+            Auth::attempt($data, $remember = true);
             $auth = Auth::user();
-            $token = $auth->createToken('api_token')->plainTextToken;
+            $token = $auth->createToken('token')->plainTextToken;
             $success['name'] = $auth->name;
             $success['email'] = $auth->email;
 
             return response()->json([
                 'status' => 'Sukses',
                 'message' => 'Anda Berhasil login',
-                'api_token' => $token,
+                'token' => $token,
             ], 200);
         } else {
             //jika salah login
