@@ -38,7 +38,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/password/change', [PasswordResetController::class, 'changePassword'])->middleware('auth:sanctum');
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/comment', [CommentController::class, 'create'])->middleware('throttle:comment');
+
         Route::put('/comment/{id}', [CommentController::class, 'update'])->middleware('pemilik-comment', 'throttle:editcomment');
         Route::delete('/comment/{id}', [CommentController::class, 'destroy'])->middleware('pemilik-comment');
     });
@@ -71,6 +71,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/list', 'index');
             //menampilkan satu post sesuai idnya
             Route::get('/show/{id}', 'show');
+
+            Route::post('/{postId}/comment', [CommentController::class, 'create'])->middleware('throttle:comment', 'auth:sanctum');
             // membuat post baru
             Route::post('/create', 'store')->middleware('auth:sanctum');
             //Update post

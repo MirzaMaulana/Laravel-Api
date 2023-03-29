@@ -11,13 +11,11 @@ use Illuminate\Support\Facades\Validator;
 class CommentController extends Controller
 {
     // create comment
-    public function create(Request $request)
+    public function create(Request $request, $postId)
     {
         $validator = Validator::make($request->all(), [
-            'post_id' => ['required', 'exists:posts,id'],
             'content' => ['required'],
         ], [
-            'post_id' => 'isi id post yang mau dikomentari',
             'content.required' => 'komentar tidak boleh kosong'
         ]);
         if ($validator->fails()) {
@@ -30,6 +28,7 @@ class CommentController extends Controller
         try {
             $input = $request->all();
             $input['user_id'] = auth()->id();
+            $input['post_id'] = $postId;
             $comment = Comment::create($input);
             return response()->json([
                 'status' => 'Sukses',
