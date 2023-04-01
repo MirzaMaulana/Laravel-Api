@@ -33,9 +33,9 @@ Route::prefix('v1')->group(function () {
     //Route untuk logout
     Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     //reset password
-    Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->middleware('auth:sanctum', 'throttle:reset');
+    Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->middleware('throttle:reset');
     //change password
-    Route::post('/password/change', [PasswordResetController::class, 'changePassword'])->middleware('auth:sanctum');
+    Route::post('/password/change', [PasswordResetController::class, 'changePassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
 

@@ -7,12 +7,20 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
 class PasswordResetController extends Controller
 {
+    public function index(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        return view('token', [
+            'token' => $user->remember_token,
+        ]);
+    }
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,15 +40,13 @@ class PasswordResetController extends Controller
         try {
             // mencari user berdasarkan emailnya
             $user = User::where('email', $request->email)->firstOrFail();
-            $token = Str::random(30); //memberikan token random ke colom remember_token
+            $token = Str::random(10); //memberikan token random ke colom remember_token
             $user->forceFill([
                 'remember_token' => $token //menyimpan token
             ])->save();
             $user->sendPasswordResetNotification($token); //mengirim pesan
-
             return response()->json([
                 'status' => 'Sukses',
-                'token' => $token,
                 'message' => 'Reset password link telah dikirim ke email anda.',
             ]);
         } catch (\Exception $e) {
@@ -56,6 +62,7 @@ class PasswordResetController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
+                'email' => ['required'],
                 'token' => ['required'],
                 'password' => ['required'],
                 'current_password' => ['required', 'min:8']
@@ -75,7 +82,7 @@ class PasswordResetController extends Controller
             ]);
         }
         try {
-            $user = auth()->user();
+            $user = User::where('email', $request->email)->first();
             //mengecek apakah password sebelumnya tidak sama dengan request
             if (!Hash::check($request->current_password, $user->password)) {
                 return response()->json([
