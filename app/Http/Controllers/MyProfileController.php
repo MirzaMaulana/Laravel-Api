@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Throwable;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,7 +15,11 @@ class MyProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return response()->json($user);
+        return response()->json([
+            'status' => 'Sukses',
+            'message' => 'Sukses Mendapatkan data post',
+            'data' => new UserResource($user),
+        ]);
     }
 
     public function update(Request $request)
@@ -26,6 +31,7 @@ class MyProfileController extends Controller
                 [
                     'name' => ['required', 'string', 'max:255'],
                     'alamat' => ['required', 'string', 'max:255'],
+                    'tanggal_lahir' => ['required'],
                     'jenis_kelamin' => ['required']
                 ],
                 [
