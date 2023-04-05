@@ -50,12 +50,9 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required'],
-            'tag' => ['required', 'integer']
         ], [
             'title.required' => 'title tidak boleh kosong',
             'content.required' => 'content tidak boleh kosong',
-            'tag.required' => 'tag tidak boleh kosong dan pastikan anda sudah membuat tagnya',
-            'tag.integer' => 'pastikan anda memasukan id tagnya'
         ]);
 
         // mengecek ketika terjadi error saat input data
