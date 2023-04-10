@@ -114,7 +114,9 @@ class PostController extends Controller
             $post = Post::findOrFail($id);
             $post->title = $request->title;
             $post->content = $request->content;
+            $post->tag()->sync($request->tag);
             $post->save();
+
 
             return response()->json([
                 'status' => 'Sukses',
