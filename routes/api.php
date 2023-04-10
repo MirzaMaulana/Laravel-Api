@@ -93,6 +93,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('tag')->group(function () {
         Route::controller(TagsController::class)->group(function () {
+            Route::get('/all', 'index');
             Route::post('/create', 'store')->middleware('auth:sanctum');
             Route::delete('/delete/{tag}', 'destroy')->middleware('auth:sanctum');
             Route::put('/update/{tag}', 'update')->middleware('auth:sanctum');

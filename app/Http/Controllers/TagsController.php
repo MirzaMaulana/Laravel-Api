@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 use Throwable;
 use App\Models\Tags;
 use Illuminate\Http\Request;
+use App\Http\Resources\TagsResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class TagsController extends Controller
 {
+    public function index()
+    {
+        $tags = Tags::all();
+        return response()->json([
+            'status' => 'Sukses',
+            'data' => TagsResource::collection($tags),
+        ], 201);
+    }
     public function store(Request $request)
     {
         // memvalidasi inputan post

@@ -11,17 +11,20 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
-    public function index(Post $post)
+    public function index(Request $request, Post $post)
     {
-        $posts = Post::paginate(10);
+        $tag = $request->query('tag');
+        $posts = $tag ? $post->whereHas('tag', function ($query) use ($tag) {
+            $query->where('name', $tag);
+        })->paginate(10) : $post->paginate(10);
+
         $postsData = $posts->items();
         $nextPageUrl = $posts->nextPageUrl();
         $prevPageUrl = $posts->previousPageUrl();
-        return  response()->json([
-            'status' => 'Sukses',
-            'message' => 'Sukses mendapatkan data',
+        $response = [
+            'message' => 'Menampilkan Semua Users',
             'data' => PostResource::collection($postsData)
-        ], 200);
+        ];
 
         if (!is_null($nextPageUrl)) {
             $response['selanjutnya'] = $nextPageUrl;
@@ -50,6 +53,7 @@ class PostController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required'],
+            'tag' => ['required']
         ], [
             'title.required' => 'title tidak boleh kosong',
             'content.required' => 'content tidak boleh kosong',

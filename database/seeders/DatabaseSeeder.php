@@ -21,6 +21,38 @@ class DatabaseSeeder extends Seeder
         //     'password' => '$2y$10$a0YlBxkVQt0da/EwI5wtheJ3FsAgkDwLOQsabpiPmLgxbSSBoY/aC',
         //     'role' => 'SuperAdmin'
         // ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Programming',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Design',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'UI/UX',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Game',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Database',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Machine Learning',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Networking',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Security',
+        ]);
+
+        \App\Models\Tags::factory()->create([
+            'name' => 'Web',
+        ]);
+        \App\Models\Tags::factory()->create([
+            'name' => 'Negara',
+        ]);
+
         Post::factory()->count(30)->create();
     }
 }

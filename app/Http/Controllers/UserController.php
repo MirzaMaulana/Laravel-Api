@@ -66,7 +66,7 @@ class UserController extends Controller
 
         $response = [
             'message' => 'Menampilkan Semua Users',
-            'data' => $usersData
+            'data' => UserResource::collection($usersData)
         ];
 
         if (!is_null($nextPageUrl)) {
