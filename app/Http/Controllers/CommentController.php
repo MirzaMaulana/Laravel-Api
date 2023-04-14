@@ -42,6 +42,44 @@ class CommentController extends Controller
             ]);
         }
     }
+    public function reply(Request $request, Comment $comment)
+    {
+
+        $comment = Comment::findOrFail($request->input('comment_id'));
+
+        $validator = Validator::make($request->all(), [
+            'content' => ['required'],
+        ], [
+            'content.required' => 'komentar tidak boleh kosong'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Data yang anda berikan tidak valid',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $reply = new Comment;
+            $reply->post_id = $request->input('post_id');
+            $reply->content = $request->input('content');
+            $reply->user_id = auth()->user()->id;
+            $comment->replies()->save($reply);
+
+            return response()->json([
+                'status' => 'Sukses',
+                'message' => 'Sukses Membalas Comment',
+            ]);
+        } catch (Throwable $th) {
+            info($th);
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Terjadi Kesalahan Sistem Silahkan Coba Beberapa Saat Lagi'
+            ]);
+        }
+    }
 
     public function update(Request $request, $id)
     {

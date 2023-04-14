@@ -39,11 +39,12 @@ class PasswordResetController extends Controller
 
         try {
             // mencari user berdasarkan emailnya
-            $user = User::where('email', $request->email)->firstOrFail();
-            $token = Str::random(10); //memberikan token random ke colom remember_token
+            $user = User::where('remember_token', $request->remember_token)->firstOrFail();
+            $token = Str::random(20); //memberikan token random ke colom remember_token
             $user->forceFill([
                 'remember_token' => $token //menyimpan token
             ])->save();
+            $token = $user->remember_token;
             $user->sendPasswordResetNotification($token); //mengirim pesan
             return response()->json([
                 'status' => 'Sukses',
@@ -65,13 +66,13 @@ class PasswordResetController extends Controller
                 'email' => ['required'],
                 'token' => ['required'],
                 'password' => ['required'],
-                'current_password' => ['required', 'min:8']
+                'confirm_password' => ['required', 'same:password']
             ],
             [
                 'token' => 'isi token untuk merubah password',
                 'password.required' => 'password harus di isi',
-                'password.min:8' => 'password minimal 8 huruf',
-                'current_password.required' => 'isi password sebelumnya'
+                'confirm_password.required' => 'confirmasi password harus di isi',
+                'confirm_password.same:password' => 'confirmasi password salah pastikan confirmasi password sama dengan password'
             ]
         );
 
@@ -83,15 +84,6 @@ class PasswordResetController extends Controller
         }
         try {
             $user = User::where('email', $request->email)->first();
-            //mengecek apakah password sebelumnya tidak sama dengan request
-            if (!Hash::check($request->current_password, $user->password)) {
-                return response()->json([
-                    'status' => 'Failed',
-                    'message' => 'Kata sandi saat ini salah, current_password = isi kata sandai saat ini sebelum diubah'
-                ], 422);
-            }
-
-            // cek token reset password 
             //input token 
             $resetPasswordToken = $request->input('token');
             //ambil dari colom remember_token

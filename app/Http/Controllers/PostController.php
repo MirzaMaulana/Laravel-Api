@@ -40,7 +40,7 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
         $post->views++;
-        $post->save();
+        $post->update();
         return response()->json([
             'status' => 'Sukses',
             'message' => 'Sukses Mendapatkan data post',

@@ -38,8 +38,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/password/change', [PasswordResetController::class, 'changePassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
-
         Route::put('/comment/{id}', [CommentController::class, 'update'])->middleware('pemilik-comment', 'throttle:editcomment');
+        Route::post('/comment/reply', [CommentController::class, 'reply']);
         Route::delete('/comment/{id}', [CommentController::class, 'destroy'])->middleware('pemilik-comment');
     });
 
