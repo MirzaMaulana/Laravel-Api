@@ -13,17 +13,16 @@ class Post extends Model
 {
     use  HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = [
-        'title',
-        'views',
-        'content',
-        'created_by',
+    protected $guarded = [
+        'id'
     ];
 
     protected $appends = ['created_at_format', 'update_at_format'];
 
     protected $attributes = [
+        'image' => '',
         'views' => 0,
+        'is_pinned' => 0
     ];
 
     public function comment()
@@ -55,5 +54,9 @@ class Post extends Model
     public function tag()
     {
         return $this->belongsToMany(Tags::class, "post_tag", "post_id", "tag_id");
+    }
+    public function category()
+    {
+        return $this->belongsToMany(Tags::class, "post_category", "post_id", "category_id");
     }
 }

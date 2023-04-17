@@ -21,6 +21,8 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
+            'is_pinned' => $this->is_pinned,
+            'image' => $this->image,
             'views' => $this->views,
             'like' => $this->likes ? $this->likes->count() : null,
             'tags' => $this->tag ? $this->tag : null,

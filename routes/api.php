@@ -12,6 +12,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\PostSaveController;
 use App\Http\Controllers\MyProfileController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\PasswordResetController;
 
 /*
@@ -97,6 +98,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/create', 'store')->middleware('auth:sanctum');
             Route::delete('/delete/{tag}', 'destroy')->middleware('auth:sanctum');
             Route::put('/update/{tag}', 'update')->middleware('auth:sanctum');
+        });
+    });
+    Route::prefix('categories')->group(function () {
+        Route::controller(CategoriesController::class)->group(function () {
+            Route::get('/all', 'index');
+            Route::post('/create', 'store')->middleware('auth:sanctum');
+            Route::delete('/delete/{category}', 'destroy')->middleware('auth:sanctum');
+            Route::put('/update/{category}', 'update')->middleware('auth:sanctum');
         });
     });
 });

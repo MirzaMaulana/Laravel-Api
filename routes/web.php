@@ -18,9 +18,3 @@ use App\Http\Controllers\PasswordResetController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/password/reset/{token}', [PasswordResetController::class, 'index'])->name('password.reset');
-
-Route::get('/notif', function () {
-    $user = User::first();
-    $user->notify(new \App\Notifications\PasswordNotification);
-});

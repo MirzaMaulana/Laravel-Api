@@ -19,11 +19,13 @@ class PostController extends Controller
         })->paginate(10) : $post->paginate(10);
 
         $postsData = $posts->items();
+        $pinned = Post::Where('is_pinned', 1)->get();
         $nextPageUrl = $posts->nextPageUrl();
         $prevPageUrl = $posts->previousPageUrl();
         $response = [
             'message' => 'Menampilkan Semua Users',
-            'data' => PostResource::collection($postsData)
+            'data' => PostResource::collection($postsData),
+            'pinned' => $pinned
         ];
 
         if (!is_null($nextPageUrl)) {
@@ -72,8 +74,16 @@ class PostController extends Controller
             $input = [
                 'title' => $request->title,
                 'content' => $request->content,
+                'is_pinned' => $request->is_pinned,
                 'created_by' => Auth::user()->name
             ];
+
+            if ($request->hasFile('image')) {
+                $filename = $request->image->getClientOriginalName();
+                $request->image->storeAs('public/posts', $filename);
+                $input['image'] = asset('storage/posts/' . $filename);;
+            }
+
             $post = Post::create($input);
             $post->tag()->attach($request->tag);
 
@@ -114,6 +124,7 @@ class PostController extends Controller
             $post = Post::findOrFail($id);
             $post->title = $request->title;
             $post->content = $request->content;
+            $post->is_pinned = $request->is_pinned;
             $post->tag()->sync($request->tag);
             $post->save();
 

@@ -53,6 +53,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Negara',
         ]);
 
-        Post::factory()->count(30)->create();
+        // Post::factory()->count(30)->create();
     }
 }

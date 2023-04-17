@@ -14,13 +14,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PasswordResetController extends Controller
 {
-    public function index(Request $request)
-    {
-        $user = User::where('email', $request->email)->first();
-        return view('token', [
-            'token' => $user->remember_token,
-        ]);
-    }
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
