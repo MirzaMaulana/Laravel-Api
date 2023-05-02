@@ -13,7 +13,7 @@ class CategoriesController extends Controller
 {
     public function index()
     {
-        $Category = Category::all();
+        $Category = Category::latest()->get();
         return response()->json([
             'status' => 'Sukses',
             'data' => CategoryResource::collection($Category),

@@ -14,9 +14,19 @@ class PostController extends Controller
     public function index(Request $request, Post $post)
     {
         $tag = $request->query('tag');
-        $posts = $tag ? $post->whereHas('tag', function ($query) use ($tag) {
-            $query->where('name', $tag);
-        })->paginate(10) : $post->paginate(10);
+        $category = $request->query('category');
+
+        if ($tag) {
+            $posts = $post->whereHas('tag', function ($query) use ($tag) {
+                $query->where('name', $tag);
+            })->latest()->paginate(10);
+        } elseif ($category) {
+            $posts = $post->whereHas('category', function ($query) use ($category) {
+                $query->where('name', $category);
+            })->latest()->paginate(10);
+        } else {
+            $posts = $post->latest()->paginate(10);
+        }
 
         $postsData = $posts->items();
         $pinned = Post::Where('is_pinned', 1)->get();
@@ -86,6 +96,7 @@ class PostController extends Controller
 
             $post = Post::create($input);
             $post->tag()->attach($request->tag);
+            $post->category()->attach($request->category);
 
             return response()->json([
                 'status' => 'Sukses',

@@ -13,7 +13,7 @@ class TagsController extends Controller
 {
     public function index()
     {
-        $tags = Tags::all();
+        $tags = Tags::latest()->get();
         return response()->json([
             'status' => 'Sukses',
             'data' => TagsResource::collection($tags),

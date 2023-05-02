@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Category;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -51,12 +52,26 @@ class Post extends Model
     {
         return $this->hasMany(PostSave::class);
     }
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when(isset($filters['category']), function ($query) use ($filters) {
+            $query->whereHas('category', function ($query) use ($filters) {
+                $query->where('name', $filters['category']);
+            });
+        });
+
+        $query->when(isset($filters['tag']), function ($query) use ($filters) {
+            $query->whereHas('tag', function ($query) use ($filters) {
+                $query->where('name', $filters['tag']);
+            });
+        });
+    }
     public function tag()
     {
         return $this->belongsToMany(Tags::class, "post_tag", "post_id", "tag_id");
     }
     public function category()
     {
-        return $this->belongsToMany(Tags::class, "post_category", "post_id", "category_id");
+        return $this->belongsToMany(Category::class, "post_categories", "post_id", "categories_id");
     }
 }
